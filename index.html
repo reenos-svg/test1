@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+
+  <title>Login Page</title>
+</head>
+
+<body>
+  <!-- JS files -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  
+<link href="/static/css/login.css" rel="stylesheet" />
+<div class="container text-center p-5">
+    <input id="token" value="" hidden>
+    <script type="text/javascript">
+        let token = document.getElementById('token').value;
+
+        async function authenticateUser() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            let alertDiv = document.getElementById('alert');
+
+            axios
+                .post('/api/user/login', {
+                    'email': email,
+                    'password': password
+                })
+                .then((response) => {
+                    if (response.status == 200) {
+                        token = response.data.token;
+                        alertDiv.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Logged In Successfully!</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        `;
+                        window.location.href = `http://${window.location.host}/home?token=${token}`;
+                        console.log(window.location.hostname);
+                    } else if (response.status == 401) {
+                        alertDiv.innerHTML = `
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Invalid Email/Password!</strong> Please Try Again!!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        `;
+                    } else {
+                        alertDiv.innerHTML = `
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Something Went Wrong!</strong> Please Try Again Later!!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        `;
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    alertDiv.innerHTML = `
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Something Went Wrong!</strong> Please Try Again Later!!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                        `;
+                });
+        }
+    </script>
+    <main class="form-signin">
+        <form>
+            <h1 class="fs-3 fw-bold p-5">Admin Login Page</h1>
+            <h1 class="h4 mb-3 fw-normal">Please sign in</h1>
+
+            <div id="alert"></div>
+            <div class="form-floating py-2">
+                <input id="email" type="email" class="form-control" id="floatingInput"
+                    placeholder="username@something.domain" />
+                <label for="floatingInput py-2">Email address</label>
+            </div>
+            <div class="form-floating py-2">
+                <input id="password" type="password" class="form-control" id="floatingPassword"
+                    placeholder="V3ry5Tr0n9P455w0rd" />
+                <label for="floatingPassword">Password</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" onclick="authenticateUser()" type="button">
+                Sign in
+            </button>
+        </form>
+    </main>
+</div>
+<!-- 
+    This is a normal login page, I've always been smarter than you, I've only created sign up action to `users` using API!
+    If you want access, Hack the way in by finding endpoint and signing up or find flaw in the endpoint!
+
+    - vuln admin
+ -->
+
+</body>
+
+</html>
